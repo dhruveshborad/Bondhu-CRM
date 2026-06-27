@@ -278,7 +278,7 @@ export const ProductsPage: React.FC = () => {
 
       {/* Searching & Filtering Panel */}
       <Card className="shadow-sm">
-        <CardContent className="p-4 flex flex-col md:flex-row gap-4">
+        <CardContent className="p-4! flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -391,6 +391,7 @@ export const ProductsPage: React.FC = () => {
                             onClick={() => handleDetailsClick(prod)}
                             className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                             title="View Details"
+                            aria-label="View Details"
                           >
                             <Eye className="h-4 w-4" />
                           </button>
@@ -399,6 +400,7 @@ export const ProductsPage: React.FC = () => {
                               onClick={() => handleEditClick(prod)}
                               className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                               title="Edit"
+                              aria-label="Edit product"
                             >
                               <Edit2 className="h-4 w-4" />
                             </button>
@@ -408,6 +410,7 @@ export const ProductsPage: React.FC = () => {
                               onClick={() => handleDeleteClick(prod)}
                               className="rounded p-1.5 text-destructive hover:bg-destructive/10 transition-colors"
                               title="Delete"
+                              aria-label="Delete product"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>

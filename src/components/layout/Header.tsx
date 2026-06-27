@@ -4,6 +4,7 @@ import { Menu, Bell, Sun, Moon, LogOut, ChevronDown, Clock, Store as StoreIcon }
 import { useAuthStore } from '@/store/authStore'
 import { useStoreStore } from '@/store/storeStore'
 import { useAttendanceStore } from '@/store/attendanceStore'
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
       localStorage.getItem('theme') === 'dark';
   })
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false)
 
   // Toggle Dark Mode (Tailwind v4 class-based strategy)
   useEffect(() => {
@@ -72,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
       <div className="flex items-center gap-3.5">
         {/* Store Selector */}
         {stores.length > 0 && (
-          <div className="flex items-center gap-1 bg-accent/45 border border-border/80 rounded-lg p-1">
+          <div className="hidden lg:flex items-center gap-1 bg-accent/45 border border-border/80 rounded-lg p-1">
             <StoreIcon className="h-3.5 w-3.5 text-muted-foreground ml-1.5 hidden sm:inline shrink-0" />
             <select
               value={activeStoreId || ''}
@@ -89,7 +91,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         )}
 
         {/* Attendance Widget */}
-        <div className="flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           {currentSession ? (
             <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
               <span className="relative flex h-2 w-2">
@@ -136,7 +138,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         {/* Dark/Light Mode Toggler */}
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="hidden lg:inline-flex rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           title="Toggle Theme"
         >
           {darkMode ? <Sun className="h-4.5 w-4.5 text-amber-500" /> : <Moon className="h-4.5 w-4.5" />}
@@ -162,10 +164,10 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               <div className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-[10px] border shadow-sm shrink-0">
                 {user.full_name.charAt(0).toUpperCase()}
               </div>
-              <span className="hidden sm:inline-block text-xs font-semibold text-foreground truncate max-w-[100px]">
+              <span className="hidden lg:inline-block text-xs font-semibold text-foreground truncate max-w-[100px]">
                 {user.full_name.split(' ')[0]}
               </span>
-              <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
+              <ChevronDown className="hidden lg:inline h-3 w-3 text-muted-foreground shrink-0" />
             </button>
 
             {/* Profile Dropdown Card */}
@@ -177,11 +179,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                 </div>
                 <div className="p-1">
                   <button
-                    onClick={() => {
-                      if (window.confirm('Are you sure you want to log out?')) {
-                        logout()
-                      }
-                    }}
+                    onClick={() => setIsLogoutOpen(true)}
                     className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
                   >
                     <LogOut className="h-3.5 w-3.5" />
@@ -192,6 +190,18 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             )}
           </div>
         )}
+        <ConfirmDialog
+          isOpen={isLogoutOpen}
+          onClose={() => setIsLogoutOpen(false)}
+          onConfirm={() => {
+            setIsLogoutOpen(false)
+            logout()
+          }}
+          title="Confirm Logout"
+          description="Are you absolutely sure you want to log out of your session? You will need to log back in to access the system."
+          confirmText="Logout"
+          variant="destructive"
+        />
       </div>
     </header>
   )

@@ -311,6 +311,8 @@ export const PurchasesPage: React.FC = () => {
                           disabled={fields.length === 1}
                           onClick={() => remove(idx)}
                           className="text-destructive hover:bg-destructive/10 rounded-lg cursor-pointer h-9 w-9"
+                          title="Remove Item"
+                          aria-label="Remove Item"
                         >
                           <Trash2 className="h-4.5 w-4.5" />
                         </Button>
@@ -386,6 +388,7 @@ export const PurchasesPage: React.FC = () => {
                               }}
                               className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer"
                               title="View Order items"
+                              aria-label="View Order details"
                             >
                               <Eye className="h-4.5 w-4.5" />
                             </button>

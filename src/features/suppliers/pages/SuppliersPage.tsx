@@ -209,7 +209,7 @@ export const SuppliersPage: React.FC = () => {
 
       {/* Searching Bar */}
       <Card className="shadow-sm">
-        <CardContent className="p-4">
+        <CardContent className="p-4!">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <input
@@ -265,6 +265,7 @@ export const SuppliersPage: React.FC = () => {
                           onClick={() => handleDetailsClick(supp)}
                           className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                           title="View Profile Drawer"
+                          aria-label="View Details"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -272,6 +273,7 @@ export const SuppliersPage: React.FC = () => {
                           onClick={() => handleEditClick(supp)}
                           className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                           title="Edit"
+                          aria-label="Edit supplier"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
@@ -280,6 +282,7 @@ export const SuppliersPage: React.FC = () => {
                             onClick={() => handleDeleteClick(supp)}
                             className="rounded p-1.5 text-destructive hover:bg-destructive/10 transition-colors"
                             title="Delete"
+                            aria-label="Delete supplier"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

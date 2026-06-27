@@ -12,12 +12,14 @@ import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { toast } from '@/store/toastStore'
 import { isDemoMode } from '@/lib/supabase'
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 
 export const SettingsPage: React.FC = () => {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return document.documentElement.classList.contains('dark') || 
       localStorage.getItem('theme') === 'dark';
   })
+  const [isResetOpen, setIsResetOpen] = useState(false)
 
   // Supabase runtime connection settings
   const [supabaseUrl, setSupabaseUrl] = useState(() => {
@@ -57,19 +59,22 @@ export const SettingsPage: React.FC = () => {
   }
 
   const handleResetDemo = () => {
-    if (window.confirm('WARNING: This will wipe all LocalStorage products, customers, suppliers, purchases, and sales. Are you sure you want to proceed?')) {
-      localStorage.removeItem('erp_products')
-      localStorage.removeItem('erp_customers')
-      localStorage.removeItem('erp_suppliers')
-      localStorage.removeItem('erp_purchases')
-      localStorage.removeItem('erp_sales')
-      localStorage.removeItem('demo_users')
-      localStorage.removeItem('demo_session')
-      toast.success('Simulation database wiped!', 'Reloading workspace environment.')
-      setTimeout(() => {
-        window.location.reload()
-      }, 1000)
-    }
+    setIsResetOpen(true)
+  }
+
+  const handleConfirmReset = () => {
+    setIsResetOpen(false)
+    localStorage.removeItem('erp_products')
+    localStorage.removeItem('erp_customers')
+    localStorage.removeItem('erp_suppliers')
+    localStorage.removeItem('erp_purchases')
+    localStorage.removeItem('erp_sales')
+    localStorage.removeItem('demo_users')
+    localStorage.removeItem('demo_session')
+    toast.success('Simulation database wiped!', 'Reloading workspace environment.')
+    setTimeout(() => {
+      window.location.reload()
+    }, 1000)
   }
 
   return (
@@ -203,6 +208,16 @@ export const SettingsPage: React.FC = () => {
           </ol>
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        isOpen={isResetOpen}
+        onClose={() => setIsResetOpen(false)}
+        onConfirm={handleConfirmReset}
+        title="Confirm Database Wipe"
+        description="WARNING: This will permanently wipe all LocalStorage products, customers, suppliers, purchases, sales, and demo user sessions. This action cannot be undone."
+        confirmText="Confirm Wipe"
+        variant="destructive"
+      />
 
     </motion.div>
   )

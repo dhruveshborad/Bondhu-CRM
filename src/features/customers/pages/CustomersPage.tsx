@@ -211,7 +211,7 @@ export const CustomersPage: React.FC = () => {
 
       {/* Searching Bar */}
       <Card className="shadow-sm">
-        <CardContent className="p-4">
+        <CardContent className="p-4!">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <input
@@ -267,6 +267,7 @@ export const CustomersPage: React.FC = () => {
                           onClick={() => handleDetailsClick(cust)}
                           className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                           title="View Profile Drawer"
+                          aria-label="View Details"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -275,6 +276,7 @@ export const CustomersPage: React.FC = () => {
                             onClick={() => handleEditClick(cust)}
                             className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                             title="Edit"
+                            aria-label="Edit customer"
                           >
                             <Edit2 className="h-4 w-4" />
                           </button>
@@ -284,6 +286,7 @@ export const CustomersPage: React.FC = () => {
                             onClick={() => handleDeleteClick(cust)}
                             className="rounded p-1.5 text-destructive hover:bg-destructive/10 transition-colors"
                             title="Delete"
+                            aria-label="Delete customer"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

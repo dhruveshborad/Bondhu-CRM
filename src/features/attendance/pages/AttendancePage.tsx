@@ -29,6 +29,7 @@ import { toast } from '@/store/toastStore'
 import { profilesService } from '@/services/profilesService'
 import { tasksService } from '@/services/tasksService'
 import type { Profile, Task } from '@/types'
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 
 export const AttendancePage: React.FC = () => {
   const { user } = useAuthStore()
@@ -73,6 +74,9 @@ export const AttendancePage: React.FC = () => {
 
   // Live timer for active session
   const [elapsedTime, setElapsedTime] = useState('00:00:00')
+
+  const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null)
+  const [pendingRoleUpdate, setPendingRoleUpdate] = useState<{ profileId: string; role: 'admin' | 'manager' | 'staff' } | null>(null)
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -212,13 +216,19 @@ export const AttendancePage: React.FC = () => {
 
   // Task deletion handler
   const handleDeleteTask = async (taskId: string) => {
-    if (!window.confirm('Are you sure you want to delete this task?')) return
+    setDeleteTaskId(taskId)
+  }
+
+  const handleConfirmDeleteTask = async () => {
+    if (!deleteTaskId) return
     try {
-      await tasksService.delete(taskId)
+      await tasksService.delete(deleteTaskId)
       toast.success('Task deleted', 'The task was removed successfully.')
       loadTasksAndProfiles()
     } catch (err: any) {
       toast.error('Failed to delete task', err.message)
+    } finally {
+      setDeleteTaskId(null)
     }
   }
 
@@ -228,13 +238,20 @@ export const AttendancePage: React.FC = () => {
       toast.error('You cannot change your own permission levels.')
       return
     }
-    if (!window.confirm(`Are you sure you want to change this employee's role to ${newRole}?`)) return
+    setPendingRoleUpdate({ profileId, role: newRole })
+  }
+
+  const handleConfirmRoleUpdate = async () => {
+    if (!pendingRoleUpdate) return
+    const { profileId, role } = pendingRoleUpdate
     try {
-      await profilesService.updateRole(profileId, newRole)
-      toast.success('Role updated', `User promoted/demoted to ${newRole} level.`)
+      await profilesService.updateRole(profileId, role)
+      toast.success('Role updated', `User promoted/demoted to ${role} level.`)
       loadTasksAndProfiles()
     } catch (err: any) {
       toast.error('Failed to update permission level', err.message)
+    } finally {
+      setPendingRoleUpdate(null)
     }
   }
 
@@ -1100,7 +1117,7 @@ export const AttendancePage: React.FC = () => {
                       </CardTitle>
                       <Badge variant="warning">{pendingTasks.length}</Badge>
                     </CardHeader>
-                    <CardContent className="p-3 space-y-3 overflow-y-auto max-h-[400px]">
+                    <CardContent className="p-3! space-y-3 overflow-y-auto max-h-[400px]">
                       {pendingTasks.length === 0 ? (
                         <p className="text-[11px] text-muted-foreground text-center py-6">No pending tasks.</p>
                       ) : (
@@ -1110,6 +1127,8 @@ export const AttendancePage: React.FC = () => {
                               <button 
                                 onClick={() => handleDeleteTask(t.id)}
                                 className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
+                                title="Delete Task"
+                                aria-label="Delete Task"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -1158,7 +1177,7 @@ export const AttendancePage: React.FC = () => {
                       </CardTitle>
                       <Badge variant="outline" className="border-blue-500/30 text-blue-600 bg-blue-500/5">{progressTasks.length}</Badge>
                     </CardHeader>
-                    <CardContent className="p-3 space-y-3 overflow-y-auto max-h-[400px]">
+                    <CardContent className="p-3! space-y-3 overflow-y-auto max-h-[400px]">
                       {progressTasks.length === 0 ? (
                         <p className="text-[11px] text-muted-foreground text-center py-6">No tasks in progress.</p>
                       ) : (
@@ -1168,6 +1187,8 @@ export const AttendancePage: React.FC = () => {
                               <button 
                                 onClick={() => handleDeleteTask(t.id)}
                                 className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
+                                title="Delete Task"
+                                aria-label="Delete Task"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -1223,7 +1244,7 @@ export const AttendancePage: React.FC = () => {
                       </CardTitle>
                       <Badge variant="success">{completedTasks.length}</Badge>
                     </CardHeader>
-                    <CardContent className="p-3 space-y-3 overflow-y-auto max-h-[400px]">
+                    <CardContent className="p-3! space-y-3 overflow-y-auto max-h-[400px]">
                       {completedTasks.length === 0 ? (
                         <p className="text-[11px] text-muted-foreground text-center py-6">No completed tasks.</p>
                       ) : (
@@ -1233,6 +1254,8 @@ export const AttendancePage: React.FC = () => {
                               <button 
                                 onClick={() => handleDeleteTask(t.id)}
                                 className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
+                                title="Delete Task"
+                                aria-label="Delete Task"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -1349,6 +1372,26 @@ export const AttendancePage: React.FC = () => {
             </CardContent>
           </Card>
         )}
+      <ConfirmDialog
+        isOpen={deleteTaskId !== null}
+        onClose={() => setDeleteTaskId(null)}
+        onConfirm={handleConfirmDeleteTask}
+        title="Confirm Task Deletion"
+        description="Are you absolutely sure you want to permanently delete this task? This action cannot be undone."
+        confirmText="Delete Task"
+        variant="destructive"
+      />
+
+      <ConfirmDialog
+        isOpen={pendingRoleUpdate !== null}
+        onClose={() => setPendingRoleUpdate(null)}
+        onConfirm={handleConfirmRoleUpdate}
+        title="Confirm Role Change"
+        description={pendingRoleUpdate ? `Are you sure you want to change this employee's role to ${pendingRoleUpdate.role}? This will modify their access privileges immediately.` : ''}
+        confirmText="Change Role"
+        variant="warning"
+      />
+
       </div>
     </div>
   )
